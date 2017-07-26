@@ -1,0 +1,254 @@
+{
+    "title": "Inheritance Test",
+    "resources": [
+        {
+            "methods": [
+                {
+                    "body": [
+                        {
+                            "name": "PasswordProtectedAccount",
+                            "displayName": "PasswordProtectedAccount",
+                            "typePropertyKind": "TYPE_EXPRESSION",
+                            "type": "object",
+                            "description": "An account which is password protected.",
+                            "additionalProperties": true,
+                            "properties": [
+                                {
+                                    "displayName": "name",
+                                    "type": "string",
+                                    "required": true,
+                                    "key": "name"
+                                },
+                                {
+                                    "displayName": "email",
+                                    "type": "string",
+                                    "required": true,
+                                    "pattern": "^.+@.+\\..+$",
+                                    "key": "email"
+                                },
+                                {
+                                    "enum": [
+                                        "male",
+                                        "female"
+                                    ],
+                                    "displayName": "gender",
+                                    "type": "string",
+                                    "required": false,
+                                    "key": "gender"
+                                },
+                                {
+                                    "type": "string",
+                                    "displayName": "password",
+                                    "name": "password",
+                                    "typePropertyKind": "TYPE_EXPRESSION",
+                                    "required": true,
+                                    "key": "password"
+                                }
+                            ],
+                            "key": "application/json"
+                        }
+                    ],
+                    "description": "Creates a new account\n",
+                    "method": "post",
+                    "allUriParameters": []
+                },
+                {
+                    "body": [
+                        {
+                            "name": "BannableAccount",
+                            "displayName": "BannableAccount",
+                            "typePropertyKind": "TYPE_EXPRESSION",
+                            "type": "object",
+                            "description": "An account which is password protected.",
+                            "additionalProperties": true,
+                            "properties": [
+                                {
+                                    "displayName": "name",
+                                    "type": "string",
+                                    "required": true,
+                                    "key": "name"
+                                },
+                                {
+                                    "displayName": "email",
+                                    "type": "string",
+                                    "required": true,
+                                    "pattern": "^.+@.+\\..+$",
+                                    "key": "email"
+                                },
+                                {
+                                    "enum": [
+                                        "male",
+                                        "female"
+                                    ],
+                                    "displayName": "gender",
+                                    "type": "string",
+                                    "required": false,
+                                    "key": "gender"
+                                },
+                                {
+                                    "displayName": "password",
+                                    "type": "string",
+                                    "required": true,
+                                    "key": "password"
+                                },
+                                {
+                                    "type": "boolean",
+                                    "displayName": "banned",
+                                    "name": "banned",
+                                    "typePropertyKind": "TYPE_EXPRESSION",
+                                    "required": true,
+                                    "key": "banned"
+                                }
+                            ],
+                            "key": "application/json"
+                        }
+                    ],
+                    "method": "put",
+                    "allUriParameters": []
+                }
+            ],
+            "relativeUri": "/account",
+            "displayName": "ACCOUNT",
+            "relativeUriPathSegments": [
+                "account"
+            ],
+            "absoluteUri": "/account",
+            "parentUrl": "",
+            "uniqueId": "account",
+            "allUriParameters": []
+        }
+    ],
+    "types": {
+        "Email": {
+            "type": "string",
+            "displayName": "Email",
+            "name": "Email",
+            "typePropertyKind": "TYPE_EXPRESSION",
+            "pattern": "^.+@.+\\..+$"
+        },
+        "Account": {
+            "additionalProperties": true,
+            "type": "object",
+            "description": "A basic account in the inheritance test",
+            "displayName": "Account",
+            "name": "Account",
+            "typePropertyKind": "TYPE_EXPRESSION",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "displayName": "name",
+                    "name": "name",
+                    "typePropertyKind": "TYPE_EXPRESSION",
+                    "required": true
+                },
+                "email": {
+                    "displayName": "email",
+                    "type": "string",
+                    "pattern": "^.+@.+\\..+$",
+                    "name": "email",
+                    "typePropertyKind": "TYPE_EXPRESSION",
+                    "required": true
+                },
+                "gender": {
+                    "type": "string",
+                    "enum": [
+                        "male",
+                        "female"
+                    ],
+                    "displayName": "gender",
+                    "name": "gender",
+                    "typePropertyKind": "TYPE_EXPRESSION",
+                    "required": false
+                }
+            }
+        },
+        "PasswordProtectedAccount": {
+            "description": "An account which is password protected.",
+            "additionalProperties": true,
+            "displayName": "PasswordProtectedAccount",
+            "type": "object",
+            "name": "PasswordProtectedAccount",
+            "typePropertyKind": "TYPE_EXPRESSION",
+            "properties": {
+                "name": {
+                    "displayName": "name",
+                    "type": "string",
+                    "required": true,
+                    "key": "name"
+                },
+                "email": {
+                    "displayName": "email",
+                    "type": "string",
+                    "required": true,
+                    "pattern": "^.+@.+\\..+$",
+                    "key": "email"
+                },
+                "gender": {
+                    "enum": [
+                        "male",
+                        "female"
+                    ],
+                    "displayName": "gender",
+                    "type": "string",
+                    "required": false,
+                    "key": "gender"
+                },
+                "password": {
+                    "type": "string",
+                    "displayName": "password",
+                    "name": "password",
+                    "typePropertyKind": "TYPE_EXPRESSION",
+                    "required": true,
+                    "key": "password"
+                }
+            }
+        },
+        "BannableAccount": {
+            "description": "An account which is password protected.",
+            "additionalProperties": true,
+            "displayName": "BannableAccount",
+            "type": "object",
+            "name": "BannableAccount",
+            "typePropertyKind": "TYPE_EXPRESSION",
+            "properties": {
+                "name": {
+                    "displayName": "name",
+                    "type": "string",
+                    "required": true,
+                    "key": "name"
+                },
+                "email": {
+                    "displayName": "email",
+                    "type": "string",
+                    "required": true,
+                    "pattern": "^.+@.+\\..+$",
+                    "key": "email"
+                },
+                "gender": {
+                    "enum": [
+                        "male",
+                        "female"
+                    ],
+                    "displayName": "gender",
+                    "type": "string",
+                    "required": false,
+                    "key": "gender"
+                },
+                "password": {
+                    "displayName": "password",
+                    "type": "string",
+                    "required": true,
+                    "key": "password"
+                },
+                "banned": {
+                    "type": "boolean",
+                    "displayName": "banned",
+                    "name": "banned",
+                    "typePropertyKind": "TYPE_EXPRESSION",
+                    "required": true,
+                    "key": "banned"
+                }
+            }
+        }
+    }
+}

@@ -2,112 +2,190 @@
 
 'use strict';
 
-var raml = require('raml-parser');
-var fs = require('fs');
-var Q = require('q');
+const raml = require('raml-1-parser');
+const tools = require('datatype-expansion');
+const fs = require('fs');
+const makeExamplesAndTypesConsistent = require('./consistency-helpers');
+const helpers = require('./arrays-objects-helpers');
 
-function _parseBaseUri(ramlObj) {
-  // I have no clue what kind of variables the RAML spec allows in the baseUri.
-  // For now keep it super super simple.
-  if (ramlObj.baseUri) {
-    ramlObj.baseUri = ramlObj.baseUri.replace('{version}', ramlObj.version);
-  }
-
-  return ramlObj;
+function _makeUniqueId(string) {
+  const stringWithSpacesReplaced = string.replace(/\W/g, '_');
+  const stringWithLeadingUnderscoreRemoved = stringWithSpacesReplaced.replace(
+    new RegExp('^_+'),
+    ''
+  );
+  return stringWithLeadingUnderscoreRemoved.toLowerCase();
 }
 
-function _ltrim(str, chr) {
-  var rgxtrim = (!chr) ? new RegExp('^\\s+') : new RegExp('^' + chr + '+');
-  return str.replace(rgxtrim, '');
-}
-
-function _makeUniqueId(resource) {
-  var fullUrl = resource.parentUrl + resource.relativeUri;
-  return _ltrim(fullUrl.replace(/\W/g, '_'), '_');
-}
-
-function _traverse(ramlObj, parentUrl, allUriParameters) {
-  // Add unique id's and parent URL's plus parent URI parameters to resources
-  for (var index in ramlObj.resources) {
-    if (ramlObj.resources.hasOwnProperty(index)) {
-      var resource = ramlObj.resources[index];
-      resource.parentUrl = parentUrl || '';
-      resource.uniqueId = _makeUniqueId(resource);
-      resource.allUriParameters = [];
-
-      if (allUriParameters) {
-        resource.allUriParameters.push.apply(resource.allUriParameters, allUriParameters);
-      }
-
-      if (resource.uriParameters) {
-        for (var key in resource.uriParameters) {
-          if (resource.uriParameters.hasOwnProperty(key)) {
-            resource.allUriParameters.push(resource.uriParameters[key]);
-          }
-        }
-      }
-
-      if (resource.methods) {
-        for (var methodkey in resource.methods) {
-          if (resource.methods.hasOwnProperty(methodkey)) {
-            resource.methods[methodkey].allUriParameters = resource.allUriParameters;
-          }
-        }
-      }
-
-      _traverse(resource, resource.parentUrl + resource.relativeUri, resource.allUriParameters);
-    }
-  }
-
-  return ramlObj;
-}
-
-function _addUniqueIdsToDocs(ramlObj) {
+// Add unique id's and parent URL's plus parent URI parameters to resources
+function _addRaml2htmlProperties(ramlObj, parentUrl, allUriParameters) {
   // Add unique id's to top level documentation chapters
-  for (var idx in ramlObj.documentation) {
-    if (ramlObj.documentation.hasOwnProperty(idx)) {
-      var docSection = ramlObj.documentation[idx];
-      docSection.uniqueId = docSection.title.replace(/\W/g, '-');
-    }
-  }
-
-  return ramlObj;
-}
-
-function _enhanceRamlObj(ramlObj) {
-  ramlObj = _parseBaseUri(ramlObj);
-  ramlObj = _traverse(ramlObj);
-  return _addUniqueIdsToDocs(ramlObj);
-}
-
-function _sourceToRamlObj(source) {
-  if (typeof source === 'string') {
-    if (fs.existsSync(source) || source.indexOf('http') === 0) {
-      // Parse as file or url
-      return raml.loadFile(source);
-    }
-
-    // Parse as string or buffer
-    return raml.load('' + source);
-  } else if (source instanceof Buffer) {
-    // Parse as buffer
-    return raml.load('' + source);
-  } else if (typeof source === 'object') {
-    // Parse RAML object directly
-    return Q.fcall(function() {
-      return source;
+  if (ramlObj.documentation) {
+    ramlObj.documentation.forEach(docSection => {
+      docSection.uniqueId = _makeUniqueId(docSection.title);
     });
   }
 
-  return Q.fcall(function() {
-    throw new Error('_sourceToRamlObj: You must supply either file, url, data or obj as source.');
+  if (!ramlObj.resources) {
+    return ramlObj;
+  }
+
+  ramlObj.resources.forEach(resource => {
+    resource.parentUrl = parentUrl || '';
+    resource.uniqueId = _makeUniqueId(
+      resource.parentUrl + resource.relativeUri
+    );
+    resource.allUriParameters = [];
+
+    if (allUriParameters) {
+      resource.allUriParameters.push.apply(
+        resource.allUriParameters,
+        allUriParameters
+      );
+    }
+
+    if (resource.uriParameters) {
+      resource.uriParameters.forEach(uriParameter => {
+        resource.allUriParameters.push(uriParameter);
+      });
+    }
+
+    // Copy the RESOURCE uri parameters to the METHOD, because that's where they will be rendered.
+    if (resource.methods) {
+      resource.methods.forEach(method => {
+        method.allUriParameters = resource.allUriParameters;
+      });
+    }
+
+    _addRaml2htmlProperties(
+      resource,
+      resource.parentUrl + resource.relativeUri,
+      resource.allUriParameters
+    );
+  });
+
+  return ramlObj;
+}
+
+// This uses the datatype-expansion library to expand all the root type to their canonical expanded form
+function _expandRootTypes(types) {
+  if (!types) {
+    return types;
+  }
+
+  Object.keys(types).forEach(key => {
+    tools.expandedForm(types[key], types, (err, expanded) => {
+      if (expanded) {
+        tools.canonicalForm(expanded, (err2, canonical) => {
+          if (canonical) {
+            types[key] = canonical;
+          }
+        });
+      }
+    });
+  });
+
+  return types;
+}
+
+function _enhanceRamlObj(ramlObj) {
+  // Some of the structures (like `types`) are an array that hold key/value pairs, which is very annoying to work with.
+  // Let's make them into a simple object, this makes it easy to use them for direct lookups.
+  //
+  // EXAMPLE of these structures:
+  // [
+  //   { foo: { ... } },
+  //   { bar: { ... } },
+  // ]
+  //
+  // EXAMPLE of what we want:
+  // { foo: { ... }, bar: { ... } }
+  ramlObj = helpers.arraysToObjects(ramlObj);
+
+  // We want to expand inherited root types, so that later on when we copy type properties into an object,
+  // we get the full graph.
+  // Delete the types from the ramlObj so it's not processed again later on.
+  const types = makeExamplesAndTypesConsistent(_expandRootTypes(ramlObj.types));
+  delete ramlObj.types;
+
+  // Recursibely go over the entire object and make all examples and types consistent.
+  ramlObj = makeExamplesAndTypesConsistent(ramlObj, types);
+
+  // Other structures (like `responses`) are an object that hold other wrapped objects.
+  // Flatten this to simple (non-wrapped) objects in an array instead,
+  // this makes it easy to loop over them in raml2html / raml2md.
+  //
+  // EXAMPLE of these structures:
+  // {
+  //   foo: {
+  //     name: "foo!"
+  //   },
+  //   bar: {
+  //     name: "bar"
+  //   }
+  // }
+  //
+  // EXAMPLE of what we want:
+  // [ { name: "foo!", key: "foo" }, { name: "bar", key: "bar" } ]
+  ramlObj = helpers.recursiveObjectToArray(ramlObj);
+
+  // Now add all the properties and things that we need for raml2html, stuff like the uniqueId, parentUrl,
+  // and allUriParameters.
+  ramlObj = _addRaml2htmlProperties(ramlObj);
+
+  if (types) {
+    ramlObj.types = types;
+  }
+
+  return ramlObj;
+}
+
+function _sourceToRamlObj(source, validation) {
+  if (typeof source === 'string') {
+    if (fs.existsSync(source) || source.indexOf('http') === 0) {
+      // Parse as file or url
+      return raml
+        .loadApi(source, { rejectOnErrors: !!validation })
+        .then(result => {
+          if (result._node._universe._typedVersion === '0.8') {
+            throw new Error('_sourceToRamlObj: only RAML 1.0 is supported!');
+          }
+
+          if (result.expand) {
+            return result.expand(true).toJSON({ serializeMetadata: false });
+          }
+
+          return new Promise((resolve, reject) => {
+            reject(
+              new Error(
+                '_sourceToRamlObj: source could not be parsed. Is it a root RAML file?'
+              )
+            );
+          });
+        });
+    }
+
+    return new Promise((resolve, reject) => {
+      reject(new Error('_sourceToRamlObj: source does not exist.'));
+    });
+  } else if (typeof source === 'object') {
+    // Parse RAML object directly
+    return new Promise(resolve => {
+      resolve(source);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    reject(
+      new Error(
+        '_sourceToRamlObj: You must supply either file, url or object as source.'
+      )
+    );
   });
 }
 
-function parse(source) {
-  return _sourceToRamlObj(source).then(function(ramlObj) {
-    return _enhanceRamlObj(ramlObj);
-  });
-}
-
-module.exports.parse = parse;
+module.exports.parse = function(source, validation) {
+  return _sourceToRamlObj(source, validation).then(ramlObj =>
+    _enhanceRamlObj(ramlObj)
+  );
+};

@@ -1,0 +1,202 @@
+{
+    "securitySchemes": {
+        "oauth_2_0": {
+            "name": "oauth_2_0",
+            "type": "OAuth 2.0",
+            "describedBy": {
+                "headers": [
+                    {
+                        "name": "Authorization",
+                        "displayName": "Authorization",
+                        "typePropertyKind": "TYPE_EXPRESSION",
+                        "type": "string",
+                        "required": true,
+                        "key": "Authorization"
+                    }
+                ],
+                "responses": [
+                    {
+                        "code": "401",
+                        "description": "Invalid or expired token."
+                    }
+                ]
+            },
+            "settings": {
+                "accessTokenUri": "/token",
+                "authorizationGrants": [
+                    "client_credentials"
+                ]
+            },
+            "displayName": "oauth_2_0"
+        },
+        "oauth_2_0_withscopes": {
+            "name": "oauth_2_0_withscopes",
+            "type": "OAuth 2.0",
+            "describedBy": {
+                "headers": [
+                    {
+                        "name": "Authorization",
+                        "displayName": "Authorization",
+                        "typePropertyKind": "TYPE_EXPRESSION",
+                        "type": "string",
+                        "required": true,
+                        "key": "Authorization"
+                    }
+                ],
+                "responses": [
+                    {
+                        "code": "401",
+                        "description": "Invalid or expired token."
+                    }
+                ]
+            },
+            "settings": {
+                "accessTokenUri": "/token",
+                "authorizationGrants": [
+                    "client_credentials"
+                ],
+                "scopes": [
+                    "add-a",
+                    "remove-a",
+                    "add-b",
+                    "remove-b",
+                    "read-c"
+                ]
+            },
+            "displayName": "oauth_2_0_withscopes"
+        },
+        "custom_scheme": {
+            "name": "custom_scheme",
+            "type": "x-custom",
+            "description": "A custom security scheme for authenticating requests.\n",
+            "describedBy": {
+                "headers": [
+                    {
+                        "name": "SpecialToken",
+                        "displayName": "SpecialToken",
+                        "typePropertyKind": "TYPE_EXPRESSION",
+                        "type": "string",
+                        "required": true,
+                        "description": "Used to send a custom token.\n",
+                        "key": "SpecialToken"
+                    }
+                ],
+                "responses": [
+                    {
+                        "code": "401",
+                        "description": "Bad token.\n"
+                    },
+                    {
+                        "code": "403"
+                    }
+                ]
+            },
+            "displayName": "custom_scheme"
+        }
+    },
+    "title": "Secured By Null",
+    "resources": [
+        {
+            "methods": [
+                {
+                    "method": "get",
+                    "allUriParameters": []
+                },
+                {
+                    "method": "post",
+                    "allUriParameters": []
+                },
+                {
+                    "method": "put",
+                    "allUriParameters": []
+                },
+                {
+                    "method": "delete",
+                    "allUriParameters": []
+                }
+            ],
+            "relativeUri": "/A",
+            "displayName": "/A",
+            "relativeUriPathSegments": [
+                "A"
+            ],
+            "absoluteUri": "/A",
+            "parentUrl": "",
+            "uniqueId": "a",
+            "allUriParameters": []
+        },
+        {
+            "methods": [
+                {
+                    "securedBy": [
+                        {
+                            "schemeName": "oauth_2_0"
+                        }
+                    ],
+                    "method": "get",
+                    "allUriParameters": []
+                },
+                {
+                    "securedBy": [
+                        {
+                            "schemeName": "oauth_2_0"
+                        },
+                        null
+                    ],
+                    "method": "post",
+                    "allUriParameters": []
+                },
+                {
+                    "securedBy": [
+                        {
+                            "schemeName": "oauth_2_0_withscopes",
+                            "scopes": [
+                                "remove-b"
+                            ]
+                        },
+                        null
+                    ],
+                    "method": "delete",
+                    "allUriParameters": []
+                }
+            ],
+            "relativeUri": "/B",
+            "displayName": "/B",
+            "relativeUriPathSegments": [
+                "B"
+            ],
+            "absoluteUri": "/B",
+            "parentUrl": "",
+            "uniqueId": "b",
+            "allUriParameters": []
+        },
+        {
+            "methods": [
+                {
+                    "securedBy": [
+                        {
+                            "schemeName": "oauth_2_0_withscopes",
+                            "scopes": [
+                                "read-c"
+                            ]
+                        },
+                        {
+                            "schemeName": "custom_scheme"
+                        }
+                    ],
+                    "method": "get",
+                    "allUriParameters": []
+                }
+            ],
+            "relativeUri": "/C",
+            "displayName": "/C",
+            "relativeUriPathSegments": [
+                "C"
+            ],
+            "absoluteUri": "/C",
+            "parentUrl": "",
+            "uniqueId": "c",
+            "allUriParameters": []
+        }
+    ]
+}
