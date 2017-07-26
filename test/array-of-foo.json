@@ -1,0 +1,142 @@
+{
+    "title": "Test",
+    "description": "Test of array support",
+    "version": "v1",
+    "baseUri": "https://exmaple.com/{version}",
+    "baseUriParameters": [
+        {
+            "name": "version",
+            "displayName": "version",
+            "typePropertyKind": "TYPE_EXPRESSION",
+            "type": "string",
+            "required": true,
+            "enum": [
+                "v1"
+            ],
+            "key": "version"
+        }
+    ],
+    "protocols": [
+        "HTTPS"
+    ],
+    "mediaType": "application/json",
+    "resources": [
+        {
+            "methods": [
+                {
+                    "responses": [
+                        {
+                            "code": "200",
+                            "body": [
+                                {
+                                    "name": "Foos",
+                                    "displayName": "Foos",
+                                    "typePropertyKind": "TYPE_EXPRESSION",
+                                    "type": "array",
+                                    "items": {
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "displayName": "Foo",
+                                        "name": "Foo",
+                                        "typePropertyKind": "TYPE_EXPRESSION",
+                                        "properties": [
+                                            {
+                                                "type": "string",
+                                                "displayName": "id",
+                                                "name": "id",
+                                                "typePropertyKind": "TYPE_EXPRESSION",
+                                                "required": true,
+                                                "key": "id"
+                                            }
+                                        ]
+                                    },
+                                    "key": "application/json"
+                                }
+                            ],
+                            "key": "200"
+                        }
+                    ],
+                    "protocols": [
+                        "HTTPS"
+                    ],
+                    "method": "get",
+                    "allUriParameters": []
+                },
+                {
+                    "responses": [
+                        {
+                            "code": "200",
+                            "body": [
+                                {
+                                    "name": "application/json",
+                                    "displayName": "application/json",
+                                    "typePropertyKind": "TYPE_EXPRESSION",
+                                    "type": "array",
+                                    "items": {
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "displayName": "Foo",
+                                        "name": "Foo",
+                                        "typePropertyKind": "TYPE_EXPRESSION",
+                                        "properties": [
+                                            {
+                                                "type": "string",
+                                                "displayName": "id",
+                                                "name": "id",
+                                                "typePropertyKind": "TYPE_EXPRESSION",
+                                                "required": true,
+                                                "key": "id"
+                                            }
+                                        ]
+                                    },
+                                    "key": "application/json"
+                                }
+                            ],
+                            "key": "200"
+                        }
+                    ],
+                    "protocols": [
+                        "HTTPS"
+                    ],
+                    "method": "post",
+                    "allUriParameters": []
+                }
+            ],
+            "relativeUri": "/foos",
+            "displayName": "/foos",
+            "relativeUriPathSegments": [
+                "foos"
+            ],
+            "absoluteUri": "https://exmaple.com/{version}/foos",
+            "parentUrl": "",
+            "uniqueId": "foos",
+            "allUriParameters": []
+        }
+    ],
+    "types": {
+        "Foo": {
+            "additionalProperties": true,
+            "type": "object",
+            "displayName": "Foo",
+            "name": "Foo",
+            "typePropertyKind": "TYPE_EXPRESSION",
+            "properties": [
+                {
+                    "type": "string",
+                    "displayName": "id",
+                    "name": "id",
+                    "typePropertyKind": "TYPE_EXPRESSION",
+                    "required": true,
+                    "key": "id"
+                }
+            ]
+        },
+        "Foos": {
+            "name": "Foos",
+            "displayName": "Foos",
+            "typePropertyKind": "TYPE_EXPRESSION",
+            "type": "array",
+            "items": "Foo"
+        }
+    }
+}

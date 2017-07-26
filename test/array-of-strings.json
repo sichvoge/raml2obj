@@ -1,0 +1,104 @@
+{
+    "title": "API used to test broken features",
+    "version": "v1",
+    "baseUri": "http://api.samplehost.com/broken/{version}",
+    "baseUriParameters": [
+        {
+            "name": "version",
+            "displayName": "version",
+            "typePropertyKind": "TYPE_EXPRESSION",
+            "type": "string",
+            "required": true,
+            "enum": [
+                "v1"
+            ],
+            "key": "version"
+        }
+    ],
+    "protocols": [
+        "HTTP",
+        "HTTPS"
+    ],
+    "mediaType": "application/json",
+    "resources": [
+        {
+            "methods": [
+                {
+                    "responses": [
+                        {
+                            "code": "200",
+                            "body": [
+                                {
+                                    "name": "application/json",
+                                    "displayName": "application/json",
+                                    "typePropertyKind": "TYPE_EXPRESSION",
+                                    "type": "array",
+                                    "items": "string",
+                                    "examples": [
+                                        {
+                                            "value": "[\n  \"somevalue\",\n  \"anothervalue\"\n]",
+                                            "strict": true,
+                                            "name": null,
+                                            "structuredValue": [
+                                                "somevalue",
+                                                "anothervalue"
+                                            ]
+                                        }
+                                    ],
+                                    "key": "application/json"
+                                }
+                            ],
+                            "key": "200"
+                        }
+                    ],
+                    "protocols": [
+                        "HTTP"
+                    ],
+                    "method": "get",
+                    "allUriParameters": []
+                },
+                {
+                    "responses": [
+                        {
+                            "code": "200",
+                            "body": [
+                                {
+                                    "name": "application/json",
+                                    "displayName": "application/json",
+                                    "typePropertyKind": "TYPE_EXPRESSION",
+                                    "type": "array",
+                                    "items": "string",
+                                    "examples": [
+                                        {
+                                            "value": "[\n  \"somevalue\",\n  \"anothervalue\"\n]",
+                                            "strict": true,
+                                            "name": null,
+                                            "structuredValue": [
+                                                "somevalue",
+                                                "anothervalue"
+                                            ]
+                                        }
+                                    ],
+                                    "key": "application/json"
+                                }
+                            ],
+                            "key": "200"
+                        }
+                    ],
+                    "protocols": [
+                        "HTTP"
+                    ],
+                    "method": "post",
+                    "allUriParameters": []
+                }
+            ],
+            "relativeUri": "/",
+            "displayName": "/",
+            "relativeUriPathSegments": [],
+            "absoluteUri": "http://api.samplehost.com/broken/{version}/",
+            "parentUrl": "",
+            "uniqueId": "",
+            "allUriParameters": []
+        }
+    ]
+}

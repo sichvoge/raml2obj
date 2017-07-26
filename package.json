@@ -1,7 +1,7 @@
 {
   "name": "raml2obj",
   "description": "RAML to object",
-  "version": "2.2.0",
+  "version": "5.5.0",
   "author": {
     "name": "Kevin Renskers",
     "email": "info@mixedcase.nl"
@@ -10,11 +10,15 @@
     "url": "https://github.com/raml2html/raml2obj/issues"
   },
   "dependencies": {
-    "q": "1.4.x",
-    "raml-parser": "0.8.x"
+    "datatype-expansion": "0.0.15",
+    "raml-1-parser": "1.1.23"
   },
   "devDependencies": {
-    "eslint": "0.24.x"
+    "eslint": "3.19.x",
+    "eslint-plugin-prettier": "2.0.x",
+    "glob": "7.1.x",
+    "mocha": "3.3.x",
+    "prettier": "1.x"
   },
   "homepage": "https://github.com/raml2html/raml2obj",
   "keywords": [
@@ -26,8 +30,18 @@
     "type": "git",
     "url": "git://github.com/raml2html/raml2obj.git"
   },
-  "preferGlobal": "false",
+  "preferGlobal": false,
   "scripts": {
-    "lint": "eslint ./"
+    "json": "node test/output-json.js",
+    "lint": "eslint . --fix",
+    "test": "mocha 'test/*.spec.js' --reporter progress"
+  },
+  "files": [
+    "index.js",
+    "arrays-objects-helpers.js",
+    "consistency-helpers.js"
+  ],
+  "engines": {
+    "node": ">=4"
   }
 }
